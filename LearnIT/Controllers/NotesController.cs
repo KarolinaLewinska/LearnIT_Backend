@@ -49,7 +49,7 @@ namespace LearnIT.Controllers
                 return BadRequest("Nieprawidłowe żądanie");
             }
             var noteDb = _dbContext.Notes
-                .Where(s => s.Id == modifiedNote.Id).FirstOrDefault<Note>();
+                .Where(s => s.Id == id).FirstOrDefault<Note>();
             
             if (noteDb != null)
             {
