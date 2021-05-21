@@ -11,18 +11,38 @@ namespace LearnIT.Models
 {
     using System;
     using System.Collections.Generic;
-    
+    using System.ComponentModel.DataAnnotations;
+
     public partial class Note
     {
         public int Id { get; set; }
+        
+        [Required(ErrorMessage = "Field Title is required")]
+        //[RegularExpression(@"^[A-ZÊÓ¥Œ£¯ÆÑ]+[a-zêó¹œ³¿ŸæñA-ZÊÓ¥Œ£¯ÆÑ]*$", ErrorMessage = "Only letters allowed")]
         public string Title { get; set; }
+
+        [Required(ErrorMessage = "Field Category is required")]
         public string Category { get; set; }
+
+        [Required(ErrorMessage = "Field KeyWords is required")]
         public string KeyWords { get; set; }
+
+        [Required(ErrorMessage = "Field Description is required")]
         public string Description { get; set; }
+
+        [Required(ErrorMessage = "Field Link is required")]
         public string Link { get; set; }
+
+        [Required(ErrorMessage = "Field Date is required")]
         public System.DateTime Date { get; set; }
+
+        [Required(ErrorMessage = "Field Author is required")]
         public string Author { get; set; }
+
+        [Required(ErrorMessage = "Field University is required")]
         public string University { get; set; }
+
+        [Required(ErrorMessage = "Field Email is required")]
         public string Email { get; set; }
     }
 }

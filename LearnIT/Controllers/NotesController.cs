@@ -9,13 +9,13 @@ using LearnIT.Models;
 
 namespace LearnIT.Controllers
 {
-    [RoutePrefix("learn-it/materialy")]
+    [RoutePrefix("learn-it/materials")]
     [EnableCors(origins: "http://localhost:8080", headers: "*", methods: "*")]
     public class NotesController : ApiController
     {
         private readonly databaselearnitEntities _dbContext = new databaselearnitEntities();
 
-        [Route("wszystko")]
+        [Route("all")]
         [HttpGet]
         public IHttpActionResult GetAllNotes()
         {
@@ -24,34 +24,24 @@ namespace LearnIT.Controllers
                 var notesList = _dbContext.Notes.ToList();
                 if (notesList == null)
                 {
-                    var response = new HttpResponseMessage(HttpStatusCode.NotFound)
-                    {
-                        Content = new StringContent("Brak danych w bazie", System.Text.Encoding.UTF8, "text/plain"),
-                        StatusCode = HttpStatusCode.NotFound
-                    };
-                    throw new HttpResponseException(response);
-                    //return NotFound();
+                    return ResponseMessage(Request.CreateErrorResponse
+                        (HttpStatusCode.NotFound, "Data not found"));
                 }
                 if (!ModelState.IsValid)
                 {
-                    var response = new HttpResponseMessage(HttpStatusCode.BadRequest)
-                    {
-                        Content = new StringContent("Nieprawidłowe żądanie", System.Text.Encoding.UTF8, "text/plain"),
-                        StatusCode = HttpStatusCode.BadRequest
-                    };
-                    throw new HttpResponseException(response);
-                    //return BadRequest("Nieprawidłowe żądanie");
+                    return ResponseMessage(Request.CreateErrorResponse
+                           (HttpStatusCode.BadRequest, ModelState));
                 }
 
-                return Ok(notesList);
+                return ResponseMessage(Request.CreateResponse(HttpStatusCode.OK, notesList));
             }
             catch(Exception exc)
             {
-                throw exc;
+                throw exc.InnerException;
             }
         }
 
-        [Route("zagadnienie/{id}")]
+        [Route("material/{id}")]
         [HttpGet]
         public IHttpActionResult GetNote([FromUri] int id)
         {
@@ -60,153 +50,133 @@ namespace LearnIT.Controllers
                 var chosenNote = _dbContext.Notes.Find(id);
                 if (chosenNote == null)
                 {
-                    var response = new HttpResponseMessage(HttpStatusCode.NotFound)
-                    {
-                        Content = new StringContent("Podane zagadnienie nie istnieje", System.Text.Encoding.UTF8, "text/plain"),
-                        StatusCode = HttpStatusCode.NotFound
-                    };
-
-                    throw new HttpResponseException(response);
-                    //return NotFound();
-
+                    return ResponseMessage(Request.CreateErrorResponse
+                        (HttpStatusCode.NotFound, "Not found any material with ID: " + id));
                 }
                 if (!ModelState.IsValid)
                 {
-                    var response = new HttpResponseMessage(HttpStatusCode.BadRequest)
-                    {
-                        Content = new StringContent("Nieprawidłowe żądanie", System.Text.Encoding.UTF8, "text/plain"),
-                        StatusCode = HttpStatusCode.BadRequest
-                    };
-                    throw new HttpResponseException(response);
-                    //return BadRequest("Nieprawidłowe żądanie");
+                    return ResponseMessage(Request.CreateErrorResponse
+                           (HttpStatusCode.BadRequest, ModelState));
                 }
-                return Ok(chosenNote);
+                return ResponseMessage(Request.CreateResponse(HttpStatusCode.OK, chosenNote));
             } 
             catch(Exception exc)
             {
-                throw exc;
+                throw exc.InnerException;
             }    
         }
 
-        [Route("dodaj-material")]
+        [Route("add-material")]
         [HttpPost]
         public IHttpActionResult AddNote([FromBody] Note newNote)
         {
-            try
+            using (var transaction = _dbContext.Database.BeginTransaction())
             {
-                if (!ModelState.IsValid)
+                try
                 {
-                    var response = new HttpResponseMessage(HttpStatusCode.BadRequest)
+                    if (!ModelState.IsValid)
                     {
-                        Content = new StringContent("Nieprawidłowe żądanie", System.Text.Encoding.UTF8, "text/plain"),
-                        StatusCode = HttpStatusCode.BadRequest
-                    };
-                    throw new HttpResponseException(response);
-                    //return BadRequest(ModelState);
-                }
-                _dbContext.Notes.Add(newNote);
-                _dbContext.SaveChanges();
+                        return ResponseMessage(Request.CreateErrorResponse
+                                (HttpStatusCode.BadRequest, ModelState));
+                    }
+                    _dbContext.Notes.Add(newNote);
+                    transaction.Commit();
+                    _dbContext.SaveChanges();
 
-                return Ok("Pomyślnie dodano materiał o id: " + newNote.Id);
-            }
-            catch(Exception exc)
-            {
-                throw exc;
-            }  
+                    return ResponseMessage(Request.CreateResponse
+                        (HttpStatusCode.OK, "Successfully added material with ID: " + newNote.Id));
+                }
+                catch (Exception exc)
+                {
+                    transaction.Rollback();
+                    throw exc.InnerException;
+                }
+            }    
         }
 
-        [Route("edycja-materialu/{id}")]
+        [Route("edit-material/{id}")]
         [HttpPut]
         public IHttpActionResult UpdateNotes([FromUri] int id, [FromBody] Note modifiedNote)
         {
-            try
+            using (var transaction = _dbContext.Database.BeginTransaction())
             {
-                if (!ModelState.IsValid)
+                try
                 {
-                    var response = new HttpResponseMessage(HttpStatusCode.BadRequest)
+                    if (!ModelState.IsValid)
                     {
-                        Content = new StringContent("Nieprawidłowe żądanie", System.Text.Encoding.UTF8, "text/plain"),
-                        StatusCode = HttpStatusCode.BadRequest
-                    };
-                    throw new HttpResponseException(response);
-                    //return BadRequest("Nieprawidłowe żądanie");
-                }
-                var noteDb = _dbContext.Notes
-                    .Where(s => s.Id == id).FirstOrDefault<Note>();
+                        return ResponseMessage(Request.CreateErrorResponse
+                                (HttpStatusCode.BadRequest, ModelState));
+                    }
+                    var noteDb = _dbContext.Notes
+                        .Where(s => s.Id == id).FirstOrDefault<Note>();
 
-                if (noteDb != null)
-                {
-                    noteDb.Title = modifiedNote.Title;
-                    noteDb.Category = modifiedNote.Category;
-                    noteDb.KeyWords = modifiedNote.KeyWords;
-                    noteDb.Description = modifiedNote.Description;
-                    noteDb.Link = modifiedNote.Link;
-                    noteDb.Date = modifiedNote.Date;
-                    noteDb.Author = modifiedNote.Author;
-                    noteDb.University = modifiedNote.University;
-                    noteDb.Email = modifiedNote.Email;
-
-                    _dbContext.SaveChanges();
-                }
-                else
-                {
-                    var response = new HttpResponseMessage(HttpStatusCode.NotFound)
+                    if (noteDb != null)
                     {
-                        Content = new StringContent("Podane zagadnienie nie istnieje", System.Text.Encoding.UTF8, "text/plain"),
-                        StatusCode = HttpStatusCode.NotFound
-                    };
-                    throw new HttpResponseException(response);
-                    //return NotFound();
-                }
+                        noteDb.Title = modifiedNote.Title;
+                        noteDb.Category = modifiedNote.Category;
+                        noteDb.KeyWords = modifiedNote.KeyWords;
+                        noteDb.Description = modifiedNote.Description;
+                        noteDb.Link = modifiedNote.Link;
+                        noteDb.Date = modifiedNote.Date;
+                        noteDb.Author = modifiedNote.Author;
+                        noteDb.University = modifiedNote.University;
+                        noteDb.Email = modifiedNote.Email;
 
-                return Ok("Zaktualizowano dane dotyczące materiału o id: " + id);
+                        _dbContext.SaveChanges();
+                        transaction.Commit();
+                    }
+                    else
+                    {
+                        return ResponseMessage(Request.CreateErrorResponse
+                            (HttpStatusCode.NotFound, "Not found any material with ID: " + id));
+                    }
+                    return ResponseMessage(Request.CreateResponse
+                        (HttpStatusCode.OK, "Successfully updated material with ID: " + id));
+                }
+                catch (Exception exc)
+                {
+                    transaction.Rollback();
+                    throw exc.InnerException;
+                }
             }
-            catch (Exception exc)
-            {
-                //przy nieprawidłowym id robi catch
-                throw exc;
-            } 
+
+               
         }
 
-        [Route("usun-material/{id}")]
+        [Route("delete-material/{id}")]
         [HttpDelete]
         public IHttpActionResult Delete([FromUri] int id)
         {
-            try
+            using (var transaction = _dbContext.Database.BeginTransaction())
             {
-                var NoteToDelete = _dbContext.Notes.Find(id);
-
-                if (NoteToDelete == null)
+                try
                 {
-                    var response = new HttpResponseMessage(HttpStatusCode.NotFound)
-                    {
-                        Content = new StringContent("Podane zagadnienie nie istnieje", System.Text.Encoding.UTF8, "text/plain"),
-                        StatusCode = HttpStatusCode.NotFound
-                         
-                    };
-                    throw new HttpResponseException(response);
-                    //return NotFound();
-                }
-                if (!ModelState.IsValid)
-                {
-                    var response = new HttpResponseMessage(HttpStatusCode.BadRequest)
-                    {
-                        Content = new StringContent("Nieprawidłowe żądanie", System.Text.Encoding.UTF8, "text/plain"),
-                        StatusCode = HttpStatusCode.BadRequest
-                    };
-                    throw new HttpResponseException(response);
-                    //return BadRequest("Nieprawidłowe żądanie");
-                }
+                    var NoteToDelete = _dbContext.Notes.Find(id);
 
-                _dbContext.Notes.Remove(NoteToDelete);
-                _dbContext.SaveChanges();
-                return Ok("Usunięto dane");
+                    if (NoteToDelete == null)
+                    {
+                        return ResponseMessage(Request.CreateErrorResponse
+                            (HttpStatusCode.NotFound, "Not found any material with ID: " + id));
+                    }
+                    if (!ModelState.IsValid)
+                    {
+                        return ResponseMessage(Request.CreateErrorResponse
+                                 (HttpStatusCode.BadRequest, ModelState));
+                    }
+
+                    _dbContext.Notes.Remove(NoteToDelete);
+                    _dbContext.SaveChanges();
+                    transaction.Commit();
+                    return ResponseMessage(Request.CreateResponse(HttpStatusCode.OK, "Successfully deleted material"));
+                }
+                catch (Exception exc)
+                {
+                    transaction.Rollback();
+                    throw exc.InnerException;
+                }
             }
-            catch(Exception exc)
-            {
-                //przy nieprawidłowym id wywala catch
-                throw exc;
-            }
+
+                
         }
     }
 }
