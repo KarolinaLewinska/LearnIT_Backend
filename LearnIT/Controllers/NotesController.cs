@@ -84,7 +84,7 @@ namespace LearnIT.Controllers
                     _dbContext.SaveChanges();
 
                     return ResponseMessage(Request.CreateResponse
-                        (HttpStatusCode.OK, "Successfully added material with ID: " + newNote.Id));
+                        (HttpStatusCode.Created, "Successfully added material with ID: " + newNote.Id));
                 }
                 catch (Exception exc)
                 {
