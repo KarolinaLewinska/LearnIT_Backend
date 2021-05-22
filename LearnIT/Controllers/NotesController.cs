@@ -91,11 +91,13 @@ namespace LearnIT.Controllers
                 {
                     var existingTitle = _dbContext.Notes.SingleOrDefault(x => x.Title == newNote.Title);
                     var existingLink = _dbContext.Notes.SingleOrDefault(x=> x.Link == newNote.Link);
+                    
                     if (existingTitle != null || existingLink != null)
                     {
                         return ResponseMessage(Request.CreateErrorResponse
                             (HttpStatusCode.Conflict, "Material with the same title or link already exists"));
                     }
+
                     _dbContext.Notes.Add(newNote);
                     transaction.Commit();
                     _dbContext.SaveChanges();
@@ -129,15 +131,6 @@ namespace LearnIT.Controllers
             {
                 try
                 {
-                    var existingTitle = _dbContext.Notes.SingleOrDefault(x => x.Title == modifiedNote.Title);
-                    var existingLink = _dbContext.Notes.SingleOrDefault(x => x.Link == modifiedNote.Link);
-                    
-                    if (existingTitle != null || existingLink != null)
-                    {
-                        return ResponseMessage(Request.CreateErrorResponse
-                            (HttpStatusCode.Conflict, "Material with the same title or link already exists"));
-                    }
-
                     var noteDb = _dbContext.Notes
                         .Where(s => s.Id == id).FirstOrDefault<Note>();
 
@@ -174,9 +167,7 @@ namespace LearnIT.Controllers
                     return ResponseMessage(Request.CreateResponse
                         (HttpStatusCode.InternalServerError, exc.Message));
                 }
-            }
-
-               
+            } 
         }
 
         [Route("delete-material/{id}")]
@@ -200,10 +191,10 @@ namespace LearnIT.Controllers
                             (HttpStatusCode.NotFound, "Not found any material with ID: " + id));
                     }
                     
-
                     _dbContext.Notes.Remove(NoteToDelete);
                     _dbContext.SaveChanges();
                     transaction.Commit();
+
                     return ResponseMessage(Request.CreateResponse(HttpStatusCode.OK, "Successfully deleted material"));
                 }
                 catch (Exception exc)
@@ -216,9 +207,7 @@ namespace LearnIT.Controllers
                     return ResponseMessage(Request.CreateResponse
                         (HttpStatusCode.InternalServerError, exc.Message));
                 }
-            }
-
-                
+            }   
         }
     }
 }
