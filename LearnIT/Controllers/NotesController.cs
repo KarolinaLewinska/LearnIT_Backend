@@ -19,6 +19,12 @@ namespace LearnIT.Controllers
         [HttpGet]
         public IHttpActionResult GetAllNotes()
         {
+            if (!ModelState.IsValid)
+            {
+                return ResponseMessage(Request.CreateErrorResponse
+                       (HttpStatusCode.BadRequest, ModelState));
+            }
+
             try
             {
                 var notesList = _dbContext.Notes.ToList();
@@ -27,17 +33,16 @@ namespace LearnIT.Controllers
                     return ResponseMessage(Request.CreateErrorResponse
                         (HttpStatusCode.NotFound, "Data not found"));
                 }
-                if (!ModelState.IsValid)
-                {
-                    return ResponseMessage(Request.CreateErrorResponse
-                           (HttpStatusCode.BadRequest, ModelState));
-                }
 
                 return ResponseMessage(Request.CreateResponse(HttpStatusCode.OK, notesList));
             }
             catch(Exception exc)
             {
-                throw exc.InnerException;
+                while (exc.InnerException != null)
+                    exc = exc.InnerException;
+
+                return ResponseMessage(Request.CreateResponse
+                    (HttpStatusCode.InternalServerError, exc.Message));
             }
         }
 
@@ -45,6 +50,11 @@ namespace LearnIT.Controllers
         [HttpGet]
         public IHttpActionResult GetNote([FromUri] int id)
         {
+            if (!ModelState.IsValid)
+            {
+                return ResponseMessage(Request.CreateErrorResponse
+                       (HttpStatusCode.BadRequest, ModelState));
+            }
             try
             {
                 var chosenNote = _dbContext.Notes.Find(id);
@@ -53,31 +63,38 @@ namespace LearnIT.Controllers
                     return ResponseMessage(Request.CreateErrorResponse
                         (HttpStatusCode.NotFound, "Not found any material with ID: " + id));
                 }
-                if (!ModelState.IsValid)
-                {
-                    return ResponseMessage(Request.CreateErrorResponse
-                           (HttpStatusCode.BadRequest, ModelState));
-                }
+                
                 return ResponseMessage(Request.CreateResponse(HttpStatusCode.OK, chosenNote));
             } 
             catch(Exception exc)
             {
-                throw exc.InnerException;
-            }    
+                while(exc.InnerException != null)
+                    exc = exc.InnerException;
+
+                return ResponseMessage(Request.CreateResponse
+                    (HttpStatusCode.InternalServerError, exc.Message));
+            }
         }
 
         [Route("add-material")]
         [HttpPost]
         public IHttpActionResult AddNote([FromBody] Note newNote)
         {
+            if (!ModelState.IsValid)
+            {
+                return ResponseMessage(Request.CreateErrorResponse
+                        (HttpStatusCode.BadRequest, ModelState));
+            }
             using (var transaction = _dbContext.Database.BeginTransaction())
             {
                 try
                 {
-                    if (!ModelState.IsValid)
+                    var existingTitle = _dbContext.Notes.SingleOrDefault(x => x.Title == newNote.Title);
+                    var existingLink = _dbContext.Notes.SingleOrDefault(x=> x.Link == newNote.Link);
+                    if (existingTitle != null || existingLink != null)
                     {
                         return ResponseMessage(Request.CreateErrorResponse
-                                (HttpStatusCode.BadRequest, ModelState));
+                            (HttpStatusCode.Conflict, "Material with the same title or link already exists"));
                     }
                     _dbContext.Notes.Add(newNote);
                     transaction.Commit();
@@ -89,7 +106,12 @@ namespace LearnIT.Controllers
                 catch (Exception exc)
                 {
                     transaction.Rollback();
-                    throw exc.InnerException;
+
+                    while (exc.InnerException != null)
+                        exc = exc.InnerException;
+
+                    return ResponseMessage(Request.CreateResponse
+                        (HttpStatusCode.InternalServerError, exc.Message));
                 }
             }    
         }
@@ -98,15 +120,24 @@ namespace LearnIT.Controllers
         [HttpPut]
         public IHttpActionResult UpdateNotes([FromUri] int id, [FromBody] Note modifiedNote)
         {
+            if (!ModelState.IsValid)
+            {
+                return ResponseMessage(Request.CreateErrorResponse
+                        (HttpStatusCode.BadRequest, ModelState));
+            }
             using (var transaction = _dbContext.Database.BeginTransaction())
             {
                 try
                 {
-                    if (!ModelState.IsValid)
+                    var existingTitle = _dbContext.Notes.SingleOrDefault(x => x.Title == modifiedNote.Title);
+                    var existingLink = _dbContext.Notes.SingleOrDefault(x => x.Link == modifiedNote.Link);
+                    
+                    if (existingTitle != null || existingLink != null)
                     {
                         return ResponseMessage(Request.CreateErrorResponse
-                                (HttpStatusCode.BadRequest, ModelState));
+                            (HttpStatusCode.Conflict, "Material with the same title or link already exists"));
                     }
+
                     var noteDb = _dbContext.Notes
                         .Where(s => s.Id == id).FirstOrDefault<Note>();
 
@@ -136,7 +167,12 @@ namespace LearnIT.Controllers
                 catch (Exception exc)
                 {
                     transaction.Rollback();
-                    throw exc.InnerException;
+
+                    while (exc.InnerException != null)
+                        exc = exc.InnerException;
+
+                    return ResponseMessage(Request.CreateResponse
+                        (HttpStatusCode.InternalServerError, exc.Message));
                 }
             }
 
@@ -147,6 +183,11 @@ namespace LearnIT.Controllers
         [HttpDelete]
         public IHttpActionResult Delete([FromUri] int id)
         {
+            if (!ModelState.IsValid)
+            {
+                return ResponseMessage(Request.CreateErrorResponse
+                         (HttpStatusCode.BadRequest, ModelState));
+            }
             using (var transaction = _dbContext.Database.BeginTransaction())
             {
                 try
@@ -158,11 +199,7 @@ namespace LearnIT.Controllers
                         return ResponseMessage(Request.CreateErrorResponse
                             (HttpStatusCode.NotFound, "Not found any material with ID: " + id));
                     }
-                    if (!ModelState.IsValid)
-                    {
-                        return ResponseMessage(Request.CreateErrorResponse
-                                 (HttpStatusCode.BadRequest, ModelState));
-                    }
+                    
 
                     _dbContext.Notes.Remove(NoteToDelete);
                     _dbContext.SaveChanges();
@@ -172,7 +209,12 @@ namespace LearnIT.Controllers
                 catch (Exception exc)
                 {
                     transaction.Rollback();
-                    throw exc.InnerException;
+
+                    while (exc.InnerException != null)
+                        exc = exc.InnerException;
+
+                    return ResponseMessage(Request.CreateResponse
+                        (HttpStatusCode.InternalServerError, exc.Message));
                 }
             }
 
