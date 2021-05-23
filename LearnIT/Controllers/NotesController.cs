@@ -55,6 +55,7 @@ namespace LearnIT.Controllers
                 return ResponseMessage(Request.CreateErrorResponse
                        (HttpStatusCode.BadRequest, ModelState));
             }
+
             try
             {
                 var chosenNote = _dbContext.Notes.Find(id);
@@ -85,37 +86,32 @@ namespace LearnIT.Controllers
                 return ResponseMessage(Request.CreateErrorResponse
                         (HttpStatusCode.BadRequest, ModelState));
             }
-            using (var transaction = _dbContext.Database.BeginTransaction())
+
+            try
             {
-                try
-                {
-                    var existingTitle = _dbContext.Notes.SingleOrDefault(x => x.Title == newNote.Title);
-                    var existingLink = _dbContext.Notes.SingleOrDefault(x=> x.Link == newNote.Link);
+                var existingTitle = _dbContext.Notes.SingleOrDefault(x => x.Title == newNote.Title);
+                var existingLink = _dbContext.Notes.SingleOrDefault(x=> x.Link == newNote.Link);
                     
-                    if (existingTitle != null || existingLink != null)
-                    {
-                        return ResponseMessage(Request.CreateErrorResponse
-                            (HttpStatusCode.Conflict, "Material with the same title or link already exists"));
-                    }
-
-                    _dbContext.Notes.Add(newNote);
-                    transaction.Commit();
-                    _dbContext.SaveChanges();
-
-                    return ResponseMessage(Request.CreateResponse
-                        (HttpStatusCode.Created, "Successfully added material with ID: " + newNote.Id));
-                }
-                catch (Exception exc)
+                if (existingTitle != null || existingLink != null)
                 {
-                    transaction.Rollback();
-
-                    while (exc.InnerException != null)
-                        exc = exc.InnerException;
-
-                    return ResponseMessage(Request.CreateResponse
-                        (HttpStatusCode.InternalServerError, exc.Message));
+                    return ResponseMessage(Request.CreateErrorResponse
+                        (HttpStatusCode.Conflict, "Material with the same title or link already exists"));
                 }
-            }    
+
+                _dbContext.Notes.Add(newNote);
+                _dbContext.SaveChanges();
+
+                return ResponseMessage(Request.CreateResponse
+                    (HttpStatusCode.Created, "Successfully added material with ID: " + newNote.Id));
+            }
+            catch (Exception exc)
+            {
+                while (exc.InnerException != null)
+                    exc = exc.InnerException;
+
+                return ResponseMessage(Request.CreateResponse
+                    (HttpStatusCode.InternalServerError, exc.Message));
+            }     
         }
 
         [Route("edit-material/{id}")]
@@ -127,47 +123,42 @@ namespace LearnIT.Controllers
                 return ResponseMessage(Request.CreateErrorResponse
                         (HttpStatusCode.BadRequest, ModelState));
             }
-            using (var transaction = _dbContext.Database.BeginTransaction())
+
+            try
             {
-                try
+                var noteDb = _dbContext.Notes
+                    .Where(s => s.Id == id).FirstOrDefault<Note>();
+
+                if (noteDb != null)
                 {
-                    var noteDb = _dbContext.Notes
-                        .Where(s => s.Id == id).FirstOrDefault<Note>();
+                    noteDb.Title = modifiedNote.Title;
+                    noteDb.Category = modifiedNote.Category;
+                    noteDb.KeyWords = modifiedNote.KeyWords;
+                    noteDb.Description = modifiedNote.Description;
+                    noteDb.Link = modifiedNote.Link;
+                    noteDb.Date = modifiedNote.Date;
+                    noteDb.Author = modifiedNote.Author;
+                    noteDb.University = modifiedNote.University;
+                    noteDb.Email = modifiedNote.Email;
 
-                    if (noteDb != null)
-                    {
-                        noteDb.Title = modifiedNote.Title;
-                        noteDb.Category = modifiedNote.Category;
-                        noteDb.KeyWords = modifiedNote.KeyWords;
-                        noteDb.Description = modifiedNote.Description;
-                        noteDb.Link = modifiedNote.Link;
-                        noteDb.Date = modifiedNote.Date;
-                        noteDb.Author = modifiedNote.Author;
-                        noteDb.University = modifiedNote.University;
-                        noteDb.Email = modifiedNote.Email;
-
-                        _dbContext.SaveChanges();
-                        transaction.Commit();
-                    }
-                    else
-                    {
-                        return ResponseMessage(Request.CreateErrorResponse
-                            (HttpStatusCode.NotFound, "Not found any material with ID: " + id));
-                    }
-                    return ResponseMessage(Request.CreateResponse
-                        (HttpStatusCode.OK, "Successfully updated material with ID: " + id));
+                    _dbContext.SaveChanges();
                 }
-                catch (Exception exc)
+                else
                 {
-                    transaction.Rollback();
-
-                    while (exc.InnerException != null)
-                        exc = exc.InnerException;
-
-                    return ResponseMessage(Request.CreateResponse
-                        (HttpStatusCode.InternalServerError, exc.Message));
+                    return ResponseMessage(Request.CreateErrorResponse
+                        (HttpStatusCode.NotFound, "Not found any material with ID: " + id));
                 }
-            } 
+                return ResponseMessage(Request.CreateResponse
+                    (HttpStatusCode.OK, "Successfully updated material with ID: " + id));
+            }
+            catch (Exception exc)
+            {
+                while (exc.InnerException != null)
+                    exc = exc.InnerException;
+
+                return ResponseMessage(Request.CreateResponse
+                    (HttpStatusCode.InternalServerError, exc.Message));
+            }            
         }
 
         [Route("delete-material/{id}")]
@@ -177,37 +168,32 @@ namespace LearnIT.Controllers
             if (!ModelState.IsValid)
             {
                 return ResponseMessage(Request.CreateErrorResponse
-                         (HttpStatusCode.BadRequest, ModelState));
+                    (HttpStatusCode.BadRequest, ModelState));
             }
-            using (var transaction = _dbContext.Database.BeginTransaction())
+
+            try
             {
-                try
-                {
-                    var NoteToDelete = _dbContext.Notes.Find(id);
+                var NoteToDelete = _dbContext.Notes.Find(id);
 
-                    if (NoteToDelete == null)
-                    {
-                        return ResponseMessage(Request.CreateErrorResponse
-                            (HttpStatusCode.NotFound, "Not found any material with ID: " + id));
-                    }
+                if (NoteToDelete == null)
+                {
+                    return ResponseMessage(Request.CreateErrorResponse
+                        (HttpStatusCode.NotFound, "Not found any material with ID: " + id));
+                }
                     
-                    _dbContext.Notes.Remove(NoteToDelete);
-                    _dbContext.SaveChanges();
-                    transaction.Commit();
+                _dbContext.Notes.Remove(NoteToDelete);
+                _dbContext.SaveChanges();
 
-                    return ResponseMessage(Request.CreateResponse(HttpStatusCode.OK, "Successfully deleted material"));
-                }
-                catch (Exception exc)
-                {
-                    transaction.Rollback();
+                return ResponseMessage(Request.CreateResponse(HttpStatusCode.OK, "Successfully deleted material"));
+            }
+            catch (Exception exc)
+            {
+                while (exc.InnerException != null)
+                    exc = exc.InnerException;
 
-                    while (exc.InnerException != null)
-                        exc = exc.InnerException;
-
-                    return ResponseMessage(Request.CreateResponse
-                        (HttpStatusCode.InternalServerError, exc.Message));
-                }
-            }   
+                return ResponseMessage(Request.CreateResponse
+                    (HttpStatusCode.InternalServerError, exc.Message));
+            } 
         }
     }
 }
