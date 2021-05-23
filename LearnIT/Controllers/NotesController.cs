@@ -22,7 +22,7 @@ namespace LearnIT.Controllers
             if (!ModelState.IsValid)
             {
                 return ResponseMessage(Request.CreateErrorResponse
-                       (HttpStatusCode.BadRequest, ModelState));
+                    (HttpStatusCode.BadRequest, ModelState));
             }
 
             try
@@ -53,7 +53,7 @@ namespace LearnIT.Controllers
             if (!ModelState.IsValid)
             {
                 return ResponseMessage(Request.CreateErrorResponse
-                       (HttpStatusCode.BadRequest, ModelState));
+                    (HttpStatusCode.BadRequest, ModelState));
             }
 
             try
@@ -84,7 +84,7 @@ namespace LearnIT.Controllers
             if (!ModelState.IsValid)
             {
                 return ResponseMessage(Request.CreateErrorResponse
-                        (HttpStatusCode.BadRequest, ModelState));
+                    (HttpStatusCode.BadRequest, ModelState));
             }
 
             try
@@ -121,7 +121,7 @@ namespace LearnIT.Controllers
             if (!ModelState.IsValid)
             {
                 return ResponseMessage(Request.CreateErrorResponse
-                        (HttpStatusCode.BadRequest, ModelState));
+                    (HttpStatusCode.BadRequest, ModelState));
             }
 
             try
@@ -184,7 +184,8 @@ namespace LearnIT.Controllers
                 _dbContext.Notes.Remove(NoteToDelete);
                 _dbContext.SaveChanges();
 
-                return ResponseMessage(Request.CreateResponse(HttpStatusCode.OK, "Successfully deleted material"));
+                return ResponseMessage(Request.CreateResponse
+                    (HttpStatusCode.OK, "Successfully deleted material"));
             }
             catch (Exception exc)
             {
