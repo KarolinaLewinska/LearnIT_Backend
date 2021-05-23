@@ -18,18 +18,18 @@ namespace LearnIT.Models
         public int Id { get; set; }
         
         [Required(ErrorMessage = "Field Title is required")]
-        [StringLength(100, ErrorMessage = "Max 100 characters allowed")]
-        [RegularExpression(@"^[A-ZÊÓ¥Œ£¯ÆÑa-zêó¹œ³¿ŸæñA-ZÊÓ¥Œ£¯ÆÑ \-]*$", ErrorMessage = "Only letters, spaces and dashes allowed")]
+        [StringLength(50, ErrorMessage = "Max 50 characters allowed")]
+        [RegularExpression(@"^[A-ZÊÓ¥Œ£¯ÆÑa-zêó¹œ³¿ŸæñA-ZÊÓ¥Œ£¯ÆÑ , ' \- &quot;]*$", ErrorMessage = "Only letters, spaces, dashes, commas and quotes allowed")]
         public string Title { get; set; }
 
         [Required(ErrorMessage = "Field Category is required")]
-        [StringLength(20, ErrorMessage = "Max 20 characters allowed")]
-        [RegularExpression(@"^[A-ZÊÓ¥Œ£¯ÆÑa-zêó¹œ³¿ŸæñA-ZÊÓ¥Œ£¯ÆÑ \-]*$", ErrorMessage = "Only letters, spaces and dashes allowed")]
+        [StringLength(50, ErrorMessage = "Max 50 characters allowed")]
+        [RegularExpression(@"^[A-ZÊÓ¥Œ£¯ÆÑa-zêó¹œ³¿ŸæñA-ZÊÓ¥Œ£¯ÆÑ ]*$", ErrorMessage = "Only letters and spaces allowed")]
         public string Category { get; set; }
 
         [Required(ErrorMessage = "Field KeyWords is required")]
         [StringLength(100, ErrorMessage = "Max 100 characters allowed")]
-        [RegularExpression(@"^[A-ZÊÓ¥Œ£¯ÆÑa-zêó¹œ³¿ŸæñA-ZÊÓ¥Œ£¯ÆÑ # , \-]*$", ErrorMessage = "Only letters, spaces, dashes and # allowed")]
+        [RegularExpression(@"^[A-ZÊÓ¥Œ£¯ÆÑa-zêó¹œ³¿ŸæñA-ZÊÓ¥Œ£¯ÆÑ # , . \-]*$", ErrorMessage = "Only letters, spaces, dashes, commas, dots and # allowed")]
         public string KeyWords { get; set; }
 
         [Required(ErrorMessage = "Field Description is required")]
@@ -44,13 +44,13 @@ namespace LearnIT.Models
 
         [Required(ErrorMessage = "Field Author is required")]
         [StringLength(100, ErrorMessage = "Max 100 characters allowed")]
-        [RegularExpression(@"^[A-ZÊÓ¥Œ£¯ÆÑ]+[a-zêó¹œ³¿ŸæñA-ZÊÓ¥Œ£¯ÆÑ \-]*$",
+        [RegularExpression(@"^[A-ZÊÓ¥Œ£¯ÆÑ]+[a-zêó¹œ³¿ŸæñA-ZÊÓ¥Œ£¯ÆÑ \-]*[A-ZÊÓ¥Œ£¯ÆÑ]+[a-zêó¹œ³¿ŸæñA-ZÊÓ¥Œ£¯ÆÑ ]*$",
         ErrorMessage = "Author must start with uppercase letter and must contain only letters and dashes")]
         public string Author { get; set; }
 
         [Required(ErrorMessage = "Field University is required")]
         [StringLength(100, ErrorMessage = "Max 100 characters allowed")]
-        [RegularExpression(@"^[A-ZÊÓ¥Œ£¯ÆÑ]+[a-zêó¹œ³¿ŸæñA-ZÊÓ¥Œ£¯ÆÑ \-]*$",
+        [RegularExpression(@"^[A-ZÊÓ¥Œ£¯ÆÑ]+[a-zêó¹œ³¿ŸæñA-ZÊÓ¥Œ£¯ÆÑ \-]*[A-ZÊÓ¥Œ£¯ÆÑ]+[a-zêó¹œ³¿ŸæñA-ZÊÓ¥Œ£¯ÆÑ ]*$",
         ErrorMessage = "University must start with uppercase letter and must contain only letters and dashes")]
         public string University { get; set; }
 
