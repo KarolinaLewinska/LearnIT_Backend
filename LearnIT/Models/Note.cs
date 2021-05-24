@@ -24,18 +24,19 @@ namespace LearnIT.Models
 
         [Required(ErrorMessage = "Field Category is required")]
         [StringLength(50, ErrorMessage = "Max 50 characters allowed")]
-        [RegularExpression(@"^[A-ZÊÓ¥Œ£¯ÆÑa-zêó¹œ³¿ŸæñA-ZÊÓ¥Œ£¯ÆÑ ]*$", ErrorMessage = "Only letters and spaces allowed")]
+        [RegularExpression(@"^[A-ZÊÓ¥Œ£¯ÆÑa-zêó¹œ³¿ŸæñA-ZÊÓ¥Œ£¯ÆÑ \-]*$", ErrorMessage = "Only letters, spaces and dashes allowed")]
         public string Category { get; set; }
 
         [Required(ErrorMessage = "Field KeyWords is required")]
         [StringLength(100, ErrorMessage = "Max 100 characters allowed")]
-        [RegularExpression(@"^[A-ZÊÓ¥Œ£¯ÆÑa-zêó¹œ³¿ŸæñA-ZÊÓ¥Œ£¯ÆÑ # , . \-]*$", ErrorMessage = "Only letters, spaces, dashes, commas, dots and # allowed")]
+        [RegularExpression(@"^[A-ZÊÓ¥Œ£¯ÆÑa-zêó¹œ³¿ŸæñA-ZÊÓ¥Œ£¯ÆÑ # , . \-]*$", ErrorMessage = "Only letters, spaces, dashes, commas, dots and hashes allowed")]
         public string KeyWords { get; set; }
 
         [Required(ErrorMessage = "Field Description is required")]
         public string Description { get; set; }
 
         [Required(ErrorMessage = "Field Link is required")]
+        [StringLength(2000, ErrorMessage = "Max 2000 characters allowed")]
         [RegularExpression(@"^(?:http(s)?:\/\/)?[\w.-]+(?:\.[\w\.-]+)+[\w\-\._~:/?#[\]@!\$&'\(\)\*\+,;=.]+$", ErrorMessage = "Invalid link format")]
         public string Link { get; set; }
 
@@ -55,7 +56,7 @@ namespace LearnIT.Models
         public string University { get; set; }
 
         [Required(ErrorMessage = "Field Email is required")]
-        [StringLength(100, ErrorMessage = "Max 100 characters allowed")]
+        [StringLength(320, ErrorMessage = "Max 320 characters allowed")]
         [RegularExpression(@"[a-z0-9!#$%&'\*\\\\+\\/=?^`{}|]{1}[a-z0-9!#$%&'\*\.\\\+\-\/=?^_`{}|]+@[a-z0-9.-]+\.[a-z]{2,4}$",
         ErrorMessage = "Email must contain only lowercase letters, @ and . ")]
         public string Email { get; set; }

@@ -58,14 +58,14 @@ namespace LearnIT.Controllers
 
             try
             {
-                var chosenNote = _dbContext.Notes.Find(id);
-                if (chosenNote == null)
+                var selectedNote = _dbContext.Notes.Find(id);
+                if (selectedNote == null)
                 {
                     return ResponseMessage(Request.CreateErrorResponse
                         (HttpStatusCode.NotFound, "Not found any material with ID: " + id));
                 }
                 
-                return ResponseMessage(Request.CreateResponse(HttpStatusCode.OK, chosenNote));
+                return ResponseMessage(Request.CreateResponse(HttpStatusCode.OK, selectedNote));
             } 
             catch(Exception exc)
             {
@@ -116,7 +116,7 @@ namespace LearnIT.Controllers
 
         [Route("edit-material/{id}")]
         [HttpPut]
-        public IHttpActionResult UpdateNotes([FromUri] int id, [FromBody] Note modifiedNote)
+        public IHttpActionResult UpdateNote([FromUri] int id, [FromBody] Note modifiedNote)
         {
             if (!ModelState.IsValid)
             {
@@ -126,20 +126,20 @@ namespace LearnIT.Controllers
 
             try
             {
-                var noteDb = _dbContext.Notes
+                var noteToUpdate = _dbContext.Notes
                     .Where(s => s.Id == id).FirstOrDefault<Note>();
 
-                if (noteDb != null)
+                if (noteToUpdate != null)
                 {
-                    noteDb.Title = modifiedNote.Title;
-                    noteDb.Category = modifiedNote.Category;
-                    noteDb.KeyWords = modifiedNote.KeyWords;
-                    noteDb.Description = modifiedNote.Description;
-                    noteDb.Link = modifiedNote.Link;
-                    noteDb.Date = modifiedNote.Date;
-                    noteDb.Author = modifiedNote.Author;
-                    noteDb.University = modifiedNote.University;
-                    noteDb.Email = modifiedNote.Email;
+                    noteToUpdate.Title = modifiedNote.Title;
+                    noteToUpdate.Category = modifiedNote.Category;
+                    noteToUpdate.KeyWords = modifiedNote.KeyWords;
+                    noteToUpdate.Description = modifiedNote.Description;
+                    noteToUpdate.Link = modifiedNote.Link;
+                    noteToUpdate.Date = modifiedNote.Date;
+                    noteToUpdate.Author = modifiedNote.Author;
+                    noteToUpdate.University = modifiedNote.University;
+                    noteToUpdate.Email = modifiedNote.Email;
 
                     _dbContext.SaveChanges();
                 }
@@ -163,7 +163,7 @@ namespace LearnIT.Controllers
 
         [Route("delete-material/{id}")]
         [HttpDelete]
-        public IHttpActionResult Delete([FromUri] int id)
+        public IHttpActionResult DeleteNote([FromUri] int id)
         {
             if (!ModelState.IsValid)
             {
@@ -173,15 +173,15 @@ namespace LearnIT.Controllers
 
             try
             {
-                var NoteToDelete = _dbContext.Notes.Find(id);
+                var noteToDelete = _dbContext.Notes.Find(id);
 
-                if (NoteToDelete == null)
+                if (noteToDelete == null)
                 {
                     return ResponseMessage(Request.CreateErrorResponse
                         (HttpStatusCode.NotFound, "Not found any material with ID: " + id));
                 }
                     
-                _dbContext.Notes.Remove(NoteToDelete);
+                _dbContext.Notes.Remove(noteToDelete);
                 _dbContext.SaveChanges();
 
                 return ResponseMessage(Request.CreateResponse
