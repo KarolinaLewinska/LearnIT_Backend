@@ -37,7 +37,7 @@ namespace LearnIT.Models
 
         [Required(ErrorMessage = "Field Link is required")]
         [StringLength(2000, ErrorMessage = "Max 2000 characters allowed")]
-        [RegularExpression(@"^(?:http(s)?:\/\/)?[\w.-]+(?:\.[\w\.-]+)+[\w\-\._~:/?#[\]@!\$&'\(\)\*\+,;=.]+$", ErrorMessage = "Invalid link format")]
+        [RegularExpression(@"^http[s]?://(?:[a-zA-Z]|[0-9]|[$-_@.&+]|[!*\(\),]|(?:%[0-9a-fA-F][0-9a-fA-F]))+$", ErrorMessage = "Invalid link format - it must start with http(s)://")]
         public string Link { get; set; }
 
         [Required(ErrorMessage = "Field Date is required")]
@@ -45,14 +45,14 @@ namespace LearnIT.Models
 
         [Required(ErrorMessage = "Field Author is required")]
         [StringLength(100, ErrorMessage = "Max 100 characters allowed")]
-        [RegularExpression(@"^[A-ZÊÓ¥Œ£¯ÆÑ]+[a-zêó¹œ³¿ŸæñA-ZÊÓ¥Œ£¯ÆÑ \-]*[A-ZÊÓ¥Œ£¯ÆÑ]+[a-zêó¹œ³¿ŸæñA-ZÊÓ¥Œ£¯ÆÑ ]*$",
-        ErrorMessage = "Author must start with uppercase letter and must contain only letters and dashes")]
+        [RegularExpression(@"^[A-ZÊÓ¥Œ£¯ÆÑ]{1}[a-zêó¹œ³¿Ÿæñ ]+[A-ZÊÓ¥Œ£¯ÆÑ]+[a-zêó¹œ³¿Ÿæñ \-]+[A-ZÊÓ¥Œ£¯ÆÑ]*[a-zêó¹œ³¿ŸæñA-ZÊÓ¥Œ£¯ÆÑ]*$",
+        ErrorMessage = "Author must start with uppercase letter and must contain only letters and optionally dash")]
         public string Author { get; set; }
 
         [Required(ErrorMessage = "Field University is required")]
         [StringLength(100, ErrorMessage = "Max 100 characters allowed")]
-        [RegularExpression(@"^[A-ZÊÓ¥Œ£¯ÆÑ]+[a-zêó¹œ³¿ŸæñA-ZÊÓ¥Œ£¯ÆÑ \-]*[A-ZÊÓ¥Œ£¯ÆÑ]+[a-zêó¹œ³¿ŸæñA-ZÊÓ¥Œ£¯ÆÑ ]*$",
-        ErrorMessage = "University must start with uppercase letter and must contain only letters and dashes")]
+        [RegularExpression(@"^[A-ZÊÓ¥Œ£¯ÆÑ]+[a-zêó¹œ³¿ŸæñA-ZÊÓ¥Œ£¯ÆÑ \- . ,]*$",
+        ErrorMessage = "University must start with uppercase letter and must contain only letters, dashes, dots and commas")]
         public string University { get; set; }
 
         [Required(ErrorMessage = "Field Email is required")]
