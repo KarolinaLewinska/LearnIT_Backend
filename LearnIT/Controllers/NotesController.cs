@@ -125,6 +125,14 @@ namespace LearnIT.Controllers
 
             try
             {
+                var existingTitle = _dbContext.Notes.SingleOrDefault(x => x.Title == modifiedNote.Title && x.Id != id);
+                var existingLink = _dbContext.Notes.SingleOrDefault(x => x.Link == modifiedNote.Link && x.Id != id);
+
+                if (existingTitle != null || existingLink != null)
+                {
+                    return ResponseMessage(Request.CreateErrorResponse
+                        (HttpStatusCode.Conflict, "Material with the same title or link already exists"));
+                }
                 var noteToUpdate = _dbContext.Notes
                     .Where(s => s.Id == id).FirstOrDefault<Note>();
 

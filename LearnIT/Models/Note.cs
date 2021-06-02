@@ -19,7 +19,7 @@ namespace LearnIT.Models
         
         [Required(ErrorMessage = "Field Title is required")]
         [StringLength(50, ErrorMessage = "Max 50 characters allowed")]
-        [RegularExpression(@"^[A-ZÊÓ¥Œ£¯ÆÑa-zêó¹œ³¿ŸæñA-ZÊÓ¥Œ£¯ÆÑ , ' \- &quot;]*$", ErrorMessage = "Only letters, spaces, dashes, commas and quotes allowed")]
+        [RegularExpression(@"^[A-ZÊÓ¥Œ£¯ÆÑa-zêó¹œ³¿ŸæñA-ZÊÓ¥Œ£¯ÆÑ0-9 , . ' \- &quot;]*$", ErrorMessage = "Only letters, spaces, dashes, commas, dots and quotes allowed")]
         public string Title { get; set; }
 
         [Required(ErrorMessage = "Field Category is required")]
