@@ -12,12 +12,12 @@ namespace LearnIT.Models
 
         [Required(ErrorMessage = "Field Category is required")]
         [StringLength(50, ErrorMessage = "Max 50 characters allowed")]
-        [RegularExpression(@"^[A-ZÊÓ¥Œ£¯ÆÑa-zêó¹œ³¿ŸæñA-ZÊÓ¥Œ£¯ÆÑ \-]*$", ErrorMessage = "Only letters, spaces and dashes allowed")]
+        [RegularExpression(@"^[A-ZÊÓ¥Œ£¯ÆÑa-zêó¹œ³¿ŸæñA-ZÊÓ¥Œ£¯ÆÑ \-]*$", ErrorMessage = "Only letters, spaces and optionally: - allowed")]
         public string Category { get; set; }
 
         [Required(ErrorMessage = "Field KeyWords is required")]
         [StringLength(100, ErrorMessage = "Max 100 characters allowed")]
-        [RegularExpression(@"^[A-ZÊÓ¥Œ£¯ÆÑa-zêó¹œ³¿ŸæñA-ZÊÓ¥Œ£¯ÆÑ # , . + \-]*$", ErrorMessage = "Only letters, spaces, dashes, commas, dots and hashes allowed")]
+        [RegularExpression(@"^[A-ZÊÓ¥Œ£¯ÆÑa-zêó¹œ³¿ŸæñA-ZÊÓ¥Œ£¯ÆÑ # , . + \-]*$", ErrorMessage = "Only letters, spaces and optionally: -.,#+ allowed")]
         public string KeyWords { get; set; }
 
         [Required(ErrorMessage = "Field Description is required")]
@@ -34,13 +34,13 @@ namespace LearnIT.Models
         [Required(ErrorMessage = "Field Author is required")]
         [StringLength(100, ErrorMessage = "Max 100 characters allowed")]
         [RegularExpression(@"^[A-ZÊÓ¥Œ£¯ÆÑ]{1}[a-zêó¹œ³¿Ÿæñ ]+[A-ZÊÓ¥Œ£¯ÆÑ]+[a-zêó¹œ³¿Ÿæñ \-]+[A-ZÊÓ¥Œ£¯ÆÑ]*[a-zêó¹œ³¿ŸæñA-ZÊÓ¥Œ£¯ÆÑ]*$",
-        ErrorMessage = "Author must start with uppercase letter and must contain only letters and optionally dash")]
+        ErrorMessage = "Author must start with uppercase letter and must contain only letters and optionally: -")]
         public string Author { get; set; }
 
         [Required(ErrorMessage = "Field University is required")]
         [StringLength(100, ErrorMessage = "Max 100 characters allowed")]
         [RegularExpression(@"^[A-ZÊÓ¥Œ£¯ÆÑ]+[a-zêó¹œ³¿ŸæñA-ZÊÓ¥Œ£¯ÆÑ \- . ,]*$",
-        ErrorMessage = "University must start with uppercase letter and must contain only letters, dashes, dots and commas")]
+        ErrorMessage = "University must start with uppercase letter and must contain only letters and optionally: -.,")]
         public string University { get; set; }
 
         [Required(ErrorMessage = "Field Email is required")]
