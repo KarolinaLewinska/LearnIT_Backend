@@ -18,12 +18,6 @@ namespace LearnIT.Controllers
         [HttpGet]
         public IHttpActionResult GetAllNotes()
         {
-            if (!ModelState.IsValid)
-            {
-                return ResponseMessage(Request.CreateErrorResponse
-                    (HttpStatusCode.BadRequest, ModelState));
-            }
-
             try
             {
                 var notesList = _dbContext.Notes.ToList();
@@ -49,12 +43,6 @@ namespace LearnIT.Controllers
         [HttpGet]
         public IHttpActionResult GetNote([FromUri] int id)
         {
-            if (!ModelState.IsValid)
-            {
-                return ResponseMessage(Request.CreateErrorResponse
-                    (HttpStatusCode.BadRequest, ModelState));
-            }
-
             try
             {
                 var selectedNote = _dbContext.Notes.Find(id);
@@ -172,12 +160,6 @@ namespace LearnIT.Controllers
         [HttpDelete]
         public IHttpActionResult DeleteNote([FromUri] int id)
         {
-            if (!ModelState.IsValid)
-            {
-                return ResponseMessage(Request.CreateErrorResponse
-                    (HttpStatusCode.BadRequest, ModelState));
-            }
-
             try
             {
                 var noteToDelete = _dbContext.Notes.Find(id);
