@@ -1,4 +1,6 @@
-# LearnIT_Backend
-- Projekt na zaliczenie przedmiotu "Programowanie aplikacji REST w C#"
+# LearnIT Backend
 - Web API REST w C#
-- Część backendowa portalu e-learningowego
+- Część backendowa portalu e-learningowego LearnIT
+- CRUD
+- Walidacja modelu
+- Obsługa błędów (try-catch, podstawowe kody odpowiedzi)
