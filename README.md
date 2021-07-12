@@ -1,5 +1,5 @@
 # LearnIT Backend
-Backend for e-learning 2.0 portal which lets students share educational IT materials
+Backend for e-learning 2.0 portal which let students share educational IT materials
 - Web API REST
 - C#
 - CRUD
