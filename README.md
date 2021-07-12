@@ -1,6 +1,7 @@
 # LearnIT Backend
-- Web API REST w C#
-- Część backendowa portalu e-learningowego LearnIT
+Backend for e-learning 2.0 portal which lets students share educational IT materials
+- Web API REST
+- C#
 - CRUD
-- Walidacja modelu
-- Obsługa błędów (try-catch, podstawowe kody odpowiedzi)
+- Model Validation
+- Exception Handling (ry-catch, HTTP response status codes)
