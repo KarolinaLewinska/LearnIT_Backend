@@ -4,4 +4,4 @@ Backend for e-learning 2.0 portal which let students share educational IT materi
 - C#
 - CRUD
 - Model Validation
-- Exception Handling (ry-catch, HTTP response status codes)
+- Exception Handling (try-catch, HTTP response status codes)
